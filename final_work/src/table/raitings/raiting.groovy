@@ -1,6 +1,6 @@
 package table.raitings
 
-import table.csv.flight.Flight
+import table.flight.Flight
 import table.persone.Persone
 
 class Raiting {
