@@ -10,9 +10,9 @@ psql --host $APP_POSTGRES_HOST -U postgres -c '
     tags text
   );'
 
-echo "Load data from keywords.csv..."
+echo "Load data from keywords.table.csv..."
 psql --host $APP_POSTGRES_HOST -U postgres -c \
-    "\\copy keywords FROM '/data/keywords.csv' DELIMITER ',' CSV HEADER"
+    "\\copy keywords FROM '/data/keywords.table.csv' DELIMITER ',' CSV HEADER"
 
 echo "Check of download"
 psql --host $APP_POSTGRES_HOST -U postgres -c "SELECT COUNT(*) as num_ratings FROM keywords"
