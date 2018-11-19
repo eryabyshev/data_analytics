@@ -4,14 +4,14 @@ import table.Cruise.Cruise
 
 
 class Company {
-    def code;
-    def name;
-    def flights = [] as List<Cruise>
+    def code
+    def name
+    def cruise = [] as List<Cruise>
 
-    Company(name, code, flights) {
+    Company(name, code, cruise) {
         this.code = code
         this.name = name
-        this.flights = flights
+        this.cruise = cruise
     }
 }
 

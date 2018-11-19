@@ -3,7 +3,7 @@ package table.Cruise
 import table.city.City
 
 class Cruise {
-
+    def code
     def number
     City arrival
     City departure
@@ -17,6 +17,10 @@ class Cruise {
 
     def setFlights(List flights){
         this.flights = flights
+    }
+
+    def setCode(def code){
+        this.code = code
     }
 
 }
