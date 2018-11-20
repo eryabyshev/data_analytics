@@ -1,13 +1,14 @@
 package table.Cruise
 
 import table.city.City
+import table.flight.Flight
 
 class Cruise {
     def code
     def number
     City arrival
     City departure
-    def flights = []
+    def flights = [] as List<Flight>
 
     Cruise(number, City arrival, City departure) {
         this.number = number

@@ -1,28 +1,25 @@
 package generator
 
 
+DateGenerator dateGenerator = new DateGenerator()
 
+def persones = dateGenerator.personeListGenerator()
+def cities = dateGenerator.citiesListGenerator()
+def companies = dateGenerator.companyListGenerator()
+def raiting = dateGenerator.raitingListGenerator(companies, persones)
 
-def persones = DateGenerator.personeListGenerator()
+DataBaseConnector.insetIntoCompany(companies)
 
-def cities = DateGenerator.citiesListGenerator()
+companies.forEach{e-> def cruise = e.cruise
+    DataBaseConnector.insertIntoCruise(cruise)
+    cruise.forEach({c-> DataBaseConnector.insertIntoFlights(c.flights)})
+}
 
-def cruise = DateGenerator.cruiseListGenerator(cities)
+DataBaseConnector.insertIntoPerson(persones)
+DataBaseConnector.insertIntoCitys(cities)
+DataBaseConnector.insertIntoRating(raiting)
 
-def companies = DateGenerator.companyListGenerator()
-
-def raiting = DateGenerator.raitingListGenerator(companies, persones)
-
-def a = 0
-
-
-//def connector = new DataBaseConnector().getInstance()
-//
-//connector.connection.autoCommit = false
-//
-//connector.eachRow('select inet_server_addr( ), inet_server_port( );'){ row ->
-//    println row[0]
-//}
+println("Finish")
 
 
 

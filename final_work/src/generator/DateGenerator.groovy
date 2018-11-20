@@ -8,31 +8,33 @@ import table.flight.Flight
 import table.persone.Persone
 import table.raitings.Raiting
 
+import java.text.SimpleDateFormat
+
 class DateGenerator {
 
-    static final  def LENGHT_OF_CRUISE_NUMBER = 4
-    static final  def NUNBER_OR_CRUISE = 200
-    static def FLIGHT_ID = 1
-    static def MAX_DELAY = 24 * 60 * 60 * 1000
+    private final  def LENGHT_OF_CRUISE_NUMBER = 4
+    private final  def NUNBER_OR_CRUISE = 200
+    private def FLIGHT_ID = 1
+    private def MAX_DELAY = 24 * 60 * 60 * 1000
 
-    static def setOfCruiseNumber = [] as Set<Integer>
+    private def setOfCruiseNumber = [] as Set<String>
 
-    static def pathToResources = "/home/parallels/Desktop/Developer/data_sciens/final_work/resources/"
+    private def pathToResources = "/home/parallels/Desktop/Developer/data_sciens/final_work/resources/"
 
-    static List<City> citiesListGenerator() {
+     List<City> citiesListGenerator() {
         def airportsCodesFile = new File(pathToResources + "airports.txt").text.split("\n")
         def airportsNamesFile = new File(pathToResources +"airports_names.txt").text.split("\n")
 
         def citys = [] as List<City>
 
         for (def i = 0; i < Integer.min(airportsCodesFile.size(), airportsNamesFile.size()); i++) {
-            citys << new City(airportsNamesFile[i], airportsCodesFile[i])
+            citys << new City(airportsNamesFile[i].replace("\'", ""), airportsCodesFile[i])
         }
         citys
     }
 
 
-    static List<Persone> personeListGenerator() {
+     List<Persone> personeListGenerator() {
         def personName = new File(pathToResources + "person_names.txt").text.split("\n")
 
         def persons = [] as List<Persone>
@@ -60,20 +62,27 @@ class DateGenerator {
     }
 
 
-    static String randomMumber() {
+     String randomNumber() {
         Random r = new Random()
         return formToCruiseNumber(r.nextInt(9999) + 1, LENGHT_OF_CRUISE_NUMBER)
     }
 
 
-    static List<Cruise> cruiseListGenerator(List<City> cities) {
+     List<Cruise> cruiseListGenerator(List<City> cities) {
 
         def result = []
         Random r = new Random()
         for (int i = 0; i < NUNBER_OR_CRUISE; i++) {
             def arrival = cities.get(r.nextInt(r.nextInt(cities.size()) + 1))
             def departure = cities.get(r.nextInt(r.nextInt(cities.size()) + 1))
-            def number = randomMumber()
+            def number = randomNumber()
+
+            while (setOfCruiseNumber.contains(number)){
+                number = randomNumber()
+            }
+
+            setOfCruiseNumber << number
+
             def cruise = new Cruise(number, arrival, departure)
             cruise.flights = flightListGenerator(r.nextInt(100) + 50, cruise)
             result << cruise
@@ -82,18 +91,16 @@ class DateGenerator {
     }
 
 
-    static Date dateGeneraror(){
-        def before = new GregorianCalendar()
+    static Date getRandomDate(){
+        def date = new Date()
         Random r = new Random()
-        before.set(before.YEAR, new Date().getYear())
-        before.set(new Date().getYear(), r.nextInt(12) + 1, r.nextInt(28) + 1,
-                r.nextInt(23) + 1, r.nextInt(59) + 1, r.nextInt(59) + 1)
 
-
-        Calendar calendar = Calendar.getInstance()
-        calendar.set(new Date().getYear(), r.nextInt(12) + 1, r.nextInt(28) + 1,
-                r.nextInt(23) + 1, r.nextInt(59) + 1, r.nextInt(59) + 1)
-        calendar.getTime()
+        date.setMonth(r.nextInt(12) + 1)
+        date.setDate(r.nextInt(28) + 1)
+        date.setHours( r.nextInt(23) + 1)
+        date.setMinutes(r.nextInt(59) + 1)
+        date.setSeconds(r.nextInt(59) + 1)
+        date
     }
 
 
@@ -105,21 +112,18 @@ class DateGenerator {
 
 
 
-    static List<Flight> flightListGenerator(int count, Cruise cruise){
+     List<Flight> flightListGenerator(int count, Cruise cruise){
         Random r = new Random()
+         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
         def result = [] as List<Flight>
         for(def i = 0; i < count; i++){
 
-            def date = dateGeneraror()
-
-            while(setOfCruiseNumber.contains(date)){
-                date = dateGeneraror()
-            }
+            def date = getRandomDate()
 
             if(r.nextInt(5) % 3 == 0)
-                result << new Flight(FLIGHT_ID++, cruise, r.nextInt(MAX_DELAY), date, dateAfter(date))
+                result << new Flight(FLIGHT_ID++, cruise, r.nextInt(MAX_DELAY), simpleDateFormat.format(date), simpleDateFormat.format(dateAfter(date)))
             else
-                result << new Flight(FLIGHT_ID++, cruise,0, date, dateAfter(date))
+                result << new Flight(FLIGHT_ID++, cruise,0, simpleDateFormat.format(date), simpleDateFormat.format(dateAfter(date)))
 
         }
         result
@@ -127,12 +131,10 @@ class DateGenerator {
 
 
 
-    static List<Company> companyListGenerator(){
+     List<Company> companyListGenerator(){
 
         def company = new File(pathToResources + "company_names.txt").text.split(",")
         def result = [] as List<Company>
-
-
 
         for(int i = 0; i < company.size() / 2; ) {
             def cruises = cruiseListGenerator(citiesListGenerator())
@@ -144,7 +146,7 @@ class DateGenerator {
     }
 
 
-    static List<Raiting> raitingListGenerator(List<Company> companies, List<Persone> persones){
+     List<Raiting> raitingListGenerator(List<Company> companies, List<Persone> persones){
 
         def result = [] as List<Raiting>
         int pointer = 0

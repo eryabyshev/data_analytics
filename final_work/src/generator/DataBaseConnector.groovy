@@ -5,6 +5,9 @@ import table.city.City
 import table.company.Company
 import groovy.sql.Sql
 import table.flight.Flight
+import table.persone.Persone
+import table.raitings.Raiting
+
 
 class DataBaseConnector {
 
@@ -15,11 +18,11 @@ class DataBaseConnector {
 
     static final def URL = 'jdbc:postgresql://172.18.0.3:5432/postgres'
     static final def DRIVER = 'org.postgresql.Driver'
-    private static def instance
+
 
     private static def getInstance(){
-        instance = Sql.newInstance(URL, DRIVER)
-        instance.autoCommit = false
+        def instance = Sql.newInstance(URL, DRIVER)
+        instance.connection.autoCommit = false
         instance
     }
 
@@ -31,9 +34,9 @@ class DataBaseConnector {
         for(int i = 0; i < comanies.size(); i++){
 
             if(i == comanies.size() -1)
-                sql += "('${comanies.get(i).code}', '${comanies.get(i).name}');"
+                sql += "('${comanies.get(i).code}', '${comanies.get(i).name.trim()}');"
             else
-                sql += "('${comanies.get(i).code}', '${comanies.get(i).name}'),"
+                sql += "('${comanies.get(i).code}', '${comanies.get(i).name.trim()}'),"
         }
 
         execute(getInstance(), sql, 'company')
@@ -58,9 +61,8 @@ class DataBaseConnector {
     }
 
 
-    static def getTimeStamps(Date d){
-        return  "'${d.getYear()}-${d.getMonth()}-${d.getDate()} " +
-                "${d.getHours()}:${d.getMinutes()}:${d.getSeconds()}'::timestamp"
+    static def getTimeStamps(def d){
+        return  "'${d}'::timestamp"
 
     }
 
@@ -88,7 +90,43 @@ class DataBaseConnector {
 
 
     static void insertIntoCitys(List<City>cities){
-        def sql = "insert into city("
+        def sql = "insert into city(code, name) values"
+
+        for(int i = 0; i < cities.size(); i++){
+
+            if(i == cities.size() - 1)
+                sql += "('${cities.get(i).code}', '${cities.get(i).name}');"
+            else
+                sql += "('${cities.get(i).code}', '${cities.get(i).name}'),"
+        }
+        execute(getInstance(), sql, 'city')
+    }
+
+    static void insertIntoPerson(List<Persone> people){
+        def sql = "insert into person(id, firstname, lastname) values"
+
+        for(int i = 0; i < people.size(); i++) {
+            if (i == people.size() - 1)
+                sql += "(${people.get(i).id}, '${people.get(i).firdtname}', '${people.get(i).lastname}');"
+            else
+                sql += "(${people.get(i).id}, '${people.get(i).firdtname}', '${people.get(i).lastname}'),"
+        }
+        execute(getInstance(), sql, 'person')
+
+    }
+
+
+    static void insertIntoRating(List<Raiting> raitings){
+        def sql = "insert into rating(person_id, flight_id, point) values"
+
+        int i = 0;
+        for(; i < raitings.size(); i+=100)
+            sql += "(${raitings.get(i).persone.id}, ${raitings.get(i).flight.id}, ${raitings.get(i).points}),"
+
+        i = raitings.size() - 1
+        sql += "(${raitings.get(i).persone.id}, ${raitings.get(i).flight.id}, ${raitings.get(i).points});"
+
+        execute(getInstance(), sql, 'rating')
     }
 
 
@@ -100,14 +138,10 @@ class DataBaseConnector {
             instance.execute(sqlStr)
             instance.commit()
             println("Successfully committed into ${tableName} table")
-        }catch{
+        }catch(Exception e){
             instance.rollback()
             println("Transaction rollback for ${tableName} table")
         }
         instance.close()
     }
-
-
-
-
 }

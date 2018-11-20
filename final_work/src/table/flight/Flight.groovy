@@ -7,10 +7,10 @@ class Flight {
     def id
     Cruise cruise
     def delay
-    Date arrival
-    Date departure
+    String arrival
+    String departure
 
-    Flight(id, Cruise cruise, delay, Date arrival, Date departure) {
+    Flight(id, Cruise cruise, delay, String arrival, String departure) {
         this.id = id
         this.cruise = cruise
         this.delay = delay
