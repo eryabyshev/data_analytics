@@ -127,3 +127,26 @@ where cruise.code like 'AA'
 order by avg DESC, count DESC, rating.person_id DESC
 limit 50;
 
+
+-- 10
+-- рейтинг компании относительно задержек рейса
+with delay as (
+    select company.name, round(avg((flights.delay) / 3600000), 2) as avg_delay
+               from company
+                      join cruise on company.code = cruise.code
+                      join flights on cruise.number = flights.cruise_number
+               group by company.name
+               order by avg_delay
+),
+    raiting as (
+      select company.name, avg(rating.point) as avg_raiting from company
+                                                    join cruise on company.code = cruise.code
+                                                    join flights on cruise.number = flights.cruise_number
+                                                    join rating on flights.id = rating.flight_id
+      group by company.name
+  )
+
+select delay.name, delay.avg_delay, raiting.avg_raiting from delay
+                                                               join raiting on raiting.name = delay.name
+order by delay.avg_delay desc, raiting.avg_raiting desc;
+
