@@ -50,3 +50,42 @@ def sinToDegreeFromRad(a):
 
 print(f'{sinToDegreeFromRad(30):.2}')
 
+
+"""
+5. В переменных a и b записаны 2 различных числа. Вам необходимо написать код, который меняет 
+значения a и b местами без использования третьей переменной.
+"""
+
+a = 5
+b = 2
+
+def show(a, b):
+    print("a =", a, "and b =", b)
+show(a, b)
+
+a = a + b
+b = a - b
+a = a - b
+
+show(a, b)
+
+
+"""
+Дано число в двоичной системе счисления: num=10011. Напишите алгоритм перевода этого числа в привычную нам десятичную систему счисления.
+Возможно, вам понадобится цикл прохождения всех целых чисел от 0 до m:
+for n in range(m)
+"""
+
+
+
+def fromBinaryToВус(number):
+    num = str(number)
+    res = 0
+    pow = 0
+    for i in range (len(num) - 1, -1, -1):
+        res += int(num[i]) * 2**pow
+        pow += 1
+    return res
+
+number = 10011
+print(fromBinaryToВус(number))
