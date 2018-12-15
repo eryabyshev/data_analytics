@@ -46,4 +46,4 @@ def doFullWeek(map, weeks):
 
 
 print(weekSpliter(input))
-
+ 
