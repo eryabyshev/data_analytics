@@ -63,7 +63,7 @@ sql_str = (
 )
 
 # выгружаем данные из БД в Python
-cursor.execute(sql_str)
+cursor.create(sql_str)
 ui_data = [a for a in cursor.fetchall()]
 conn.commit()
 logger.info("Данные по оценкам загружены из Postgres")
